@@ -18,12 +18,12 @@ NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 ICESAT2_START = "2018-10-14"
 
 SUPPORTED_PRODUCTS = {
-    "ATL03": "Photon-level heights (raw)",
-    "ATL06": "Land ice elevation",
-    "ATL07": "Sea ice elevation",
-    "ATL08": "Vegetation / land surface",
-    "ATL12": "Ocean surface height",
-    "ATL13": "Inland water surface",
+    "ATL03": "Photons",
+    "ATL06": "Land ice",
+    "ATL07": "Sea ice",
+    "ATL08": "Land / vegetation",
+    "ATL12": "Ocean",
+    "ATL13": "Inland water",
 }
 
 # OpenAltimetry published limits

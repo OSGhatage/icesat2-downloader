@@ -1,5 +1,5 @@
 from src.cmr import parse_granule_title
-from src.geo import normalize_bounds, validate_aoi
+from src.geo import clip_ring_to_aoi, normalize_bounds, parse_cmr_polygon, validate_aoi
 from src.openaltimetry import normalize_columns
 import pandas as pd
 
@@ -23,6 +23,14 @@ def test_atl03_limit():
     assert validate_aoi("ATL03", bounds, sampling=True) is None
     small = normalize_bounds(72.8, 8.2, 73.3, 8.6)
     assert validate_aoi("ATL03", small, sampling=False) is None
+
+
+def test_cmr_polygon_clip():
+    # Long north-south granule that only crosses the AOI in the middle
+    ring = parse_cmr_polygon("20.0 73.0 20.0 73.05 0.0 73.05 0.0 73.0 20.0 73.0")
+    assert ring[0] == (20.0, 73.0)
+    clipped = clip_ring_to_aoi(ring, (72.9, 8.2, 73.2, 8.5), pad=0.02)
+    assert clipped and len(clipped[0]) >= 2
 
 
 def test_column_normalize():

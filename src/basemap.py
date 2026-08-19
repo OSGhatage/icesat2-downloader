@@ -40,17 +40,18 @@ def _auto_zoom(bounds: Bounds) -> int:
     w, s, e, n = bounds
     span = max(n - s, e - w)
     for thresh, z in (
-        (0.02, 13),
-        (0.05, 12),
-        (0.1, 11),
-        (0.25, 10),
-        (0.5, 9),
-        (1.0, 8),
-        (2.0, 7),
+        (0.02, 15),
+        (0.05, 14),
+        (0.10, 13),
+        (0.20, 12),
+        (0.40, 11),
+        (0.80, 10),
+        (1.50, 9),
+        (3.00, 8),
     ):
         if span < thresh:
             return z
-    return 6
+    return 7
 
 
 def fetch_basemap(bounds: Bounds, log=print) -> tuple[Optional[np.ndarray], Optional[list[float]]]:

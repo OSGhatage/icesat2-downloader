@@ -12,20 +12,18 @@ import numpy as np
 from shapely.geometry import box as sbox
 
 from src.config import CONF_COLORS, CONF_NAMES
-from src.geo import Bounds
+from src.geo import Bounds, bounds_from_points, pad_bounds
 
 
 def _draw_basemap(ax, bounds: Bounds, bm_arr, bm_ext) -> None:
-    w, s, e, n = bounds
-    cx, cy = (w + e) / 2, (s + n) / 2
-    hs = max(e - w, n - s) / 2 * 1.15
+    w, s, e, n = pad_bounds(bounds, 0.04)
     if bm_arr is not None and bm_ext is not None:
         ax.imshow(bm_arr, extent=bm_ext, aspect="equal", zorder=0, origin="upper", interpolation="bilinear")
     else:
         ax.set_facecolor("#e8e8e8")
         ax.grid(True, color="#cccccc", linewidth=0.5, alpha=0.7, zorder=0)
-    ax.set_xlim(cx - hs, cx + hs)
-    ax.set_ylim(cy - hs, cy + hs)
+    ax.set_xlim(w, e)
+    ax.set_ylim(s, n)
     ax.set_aspect("equal")
 
 
@@ -42,7 +40,8 @@ def save_beam_png(df, rgt, cycle, date_s, beam, out_path: Path, bounds: Bounds, 
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[0, 1])
 
-    _draw_basemap(ax1, bounds, bm_arr, bm_ext)
+    view = bounds_from_points(df["longitude"], df["latitude"]) or bounds
+    _draw_basemap(ax1, view, bm_arr, bm_ext)
     if "confidence" in df.columns and df["confidence"].notna().any():
         for cv in sorted(df["confidence"].dropna().unique()):
             m = df["confidence"] == cv

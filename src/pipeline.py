@@ -10,7 +10,7 @@ from shapely.geometry import box, mapping
 from src.basemap import fetch_basemap
 from src.cmr import search_granules
 from src.export import SessionManager, write_csv, write_shapefile, zip_session
-from src.geo import Bounds, area_km2, validate_aoi
+from src.geo import Bounds, area_km2, pad_bounds, validate_aoi
 from src.geoid import apply_geoid, build_transformer
 from src.openaltimetry import clean_beam_frames, fetch_track
 from src.visualize import save_all_tracks_png, save_beam_png
@@ -151,7 +151,7 @@ def run_download(
     if progress:
         progress(0.78)
     log("Building overview map…")
-    bm_arr, bm_ext = fetch_basemap(bounds, log=log)
+    bm_arr, bm_ext = fetch_basemap(pad_bounds(bounds, 0.04), log=log)
 
     for rgt, cycle, date, beam, df in all_beam_data:
         out_dir = session.out_dir(rgt, date, save_mode)

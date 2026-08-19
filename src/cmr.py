@@ -6,7 +6,7 @@ import re
 from typing import Callable
 
 from src.config import CMR_GRANULES_URL
-from src.geo import Bounds
+from src.geo import Bounds, clip_ring_to_aoi, parse_cmr_polygon
 from src.http import make_session
 
 # ATL03_20181014005222_02350101_006_02.h5
@@ -75,6 +75,13 @@ def search_granules(
                 continue
             seen.add(key)
             parsed["key"] = key
+            parsed["select"] = True
+            parsed["rings"] = []
+            for poly in entry.get("polygons") or []:
+                if isinstance(poly, list):
+                    poly = poly[0] if poly else ""
+                ring = parse_cmr_polygon(poly)
+                parsed["rings"].extend(clip_ring_to_aoi(ring, bounds))
             found.append(parsed)
 
         if len(entries) < 200:
