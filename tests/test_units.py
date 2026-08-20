@@ -20,9 +20,13 @@ def test_parse_rejects_garbage():
 def test_atl03_limit():
     bounds = normalize_bounds(72.0, 8.0, 74.5, 9.0)  # 2.5 x 1
     assert validate_aoi("ATL03", bounds, sampling=False)
-    assert validate_aoi("ATL03", bounds, sampling=True) is None
-    small = normalize_bounds(72.8, 8.2, 73.3, 8.6)
+    small = normalize_bounds(72.95, 8.25, 73.15, 8.45)
     assert validate_aoi("ATL03", small, sampling=False) is None
+
+
+def test_area_cap():
+    huge = normalize_bounds(72.0, 8.0, 73.5, 10.0)
+    assert validate_aoi("ATL08", huge)
 
 
 def test_cmr_polygon_clip():

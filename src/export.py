@@ -127,3 +127,28 @@ def zip_session(session_dir: Path) -> Path:
         archive.unlink()
     shutil.make_archive(str(session_dir), "zip", root_dir=session_dir)
     return archive
+
+
+def zip_selection(session_dir: Path, stems: list[str], dest: Path | None = None) -> Path:
+    """Zip only files whose name starts with one of the given stems, plus metadata."""
+    import zipfile
+
+    session_dir = Path(session_dir)
+    dest = Path(dest) if dest else session_dir.parent / f"{session_dir.name}_selected.zip"
+    if dest.exists():
+        dest.unlink()
+
+    with zipfile.ZipFile(dest, "w", zipfile.ZIP_DEFLATED) as zf:
+        meta = session_dir / "metadata"
+        if meta.exists():
+            for p in meta.rglob("*"):
+                if p.is_file():
+                    zf.write(p, p.relative_to(session_dir))
+        for p in session_dir.rglob("*"):
+            if not p.is_file():
+                continue
+            if p.parent.name == "metadata":
+                continue
+            if any(p.name.startswith(stem) for stem in stems):
+                zf.write(p, p.relative_to(session_dir))
+    return dest

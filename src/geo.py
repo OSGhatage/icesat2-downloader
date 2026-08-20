@@ -5,7 +5,9 @@ from __future__ import annotations
 import math
 from typing import Optional
 
-from src.config import OA_MAX_SPAN
+from datetime import date
+
+from src.config import AREA_CAP_KM2, MAX_DATE_DAYS, OA_MAX_SPAN
 
 
 Bounds = tuple[float, float, float, float]  # west, south, east, north
@@ -42,17 +44,33 @@ def max_span_for(product: str, sampling: bool = False) -> float:
     return OA_MAX_SPAN.get(product, OA_MAX_SPAN["DEFAULT"])
 
 
+def area_cap_km2(product: str) -> float:
+    return float(AREA_CAP_KM2.get(product, AREA_CAP_KM2["DEFAULT"]))
+
+
 def validate_aoi(product: str, bounds: Bounds, sampling: bool = False) -> Optional[str]:
     dx, dy = spans_deg(bounds)
     if dx <= 0 or dy <= 0:
         return "AOI has zero width or height."
     limit = max_span_for(product, sampling)
     if dx > limit or dy > limit:
-        extra = " Enable ATL03 sampling (1/1000) to allow up to 5°." if product == "ATL03" and not sampling else ""
+        extra = " Enable ATL03 sampling to allow up to 5°." if product == "ATL03" and not sampling else ""
         return (
-            f"{product} OpenAltimetry limit is {limit:.0f}° × {limit:.0f}°. "
+            f"{product} limit is {limit:.0f}° × {limit:.0f}°. "
             f"Your box is {dx:.2f}° × {dy:.2f}°.{extra}"
         )
+    km2 = area_km2(bounds)
+    cap = area_cap_km2(product)
+    if km2 > cap:
+        return f"{product} is limited to {cap:,.0f} km² for preview. Your box is {km2:,.0f} km²."
+    return None
+
+
+def validate_dates(start: date, end: date) -> Optional[str]:
+    if start >= end:
+        return "Start date must be before end date."
+    if (end - start).days > MAX_DATE_DAYS:
+        return f"Date range is limited to {MAX_DATE_DAYS} days."
     return None
 
 

@@ -46,6 +46,8 @@ def run_download(
     save_mode: str,
     sampling: bool,
     granules: list[dict] | None = None,
+    make_plots: bool = False,
+    make_zip: bool = False,
     log: Callable[[str], None] = print,
     progress: Callable[[float], None] | None = None,
 ) -> dict:

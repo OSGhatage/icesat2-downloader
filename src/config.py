@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 APP_NAME = "ICESat-2 Downloader"
-APP_VERSION = "2.0.0"
+APP_VERSION = "2.2.0"
 USER_AGENT = f"ICESat2-Downloader/{APP_VERSION} (research; github-codespaces)"
 
 # Official public APIs — no Earthdata login required for this scout path
@@ -31,6 +31,13 @@ OA_MAX_SPAN = {
     "ATL03": 1.0,  # degrees, unless sampling=True
     "DEFAULT": 5.0,
 }
+
+# Soft product caps so "Get data" stays inspectable in a browser
+AREA_CAP_KM2 = {
+    "ATL03": 500,
+    "DEFAULT": 2000,
+}
+MAX_DATE_DAYS = 180
 
 OA_ENDPOINTS = {
     "ATL03": f"{OA_BASE}/atl03",
